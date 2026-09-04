@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+body {
+  @apply bg-brand-dark-bg font-sans text-brand-gray-light antialiased;
+}
