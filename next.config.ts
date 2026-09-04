@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    optimizePackageImports: ['@reduxjs/toolkit', '@tanstack/react-query'],
+  },
 };
 
 export default nextConfig;
