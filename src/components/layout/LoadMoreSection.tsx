@@ -23,21 +23,30 @@ export function LoadMoreSection({
   className,
 }: LoadMoreSectionProps) {
   return (
-    <section
-      aria-label="Carregar mais itens"
-      className={cx(styles.section, className)}
-    >
+    <section className={cx(styles.section, className)}>
       <Button
         variant="load"
-        className={styles.button}
+        className={cx(styles.button, isLoading && styles.buttonLoading)}
         onClick={onLoadMore}
         disabled={isComplete || isLoading}
-        aria-label={isComplete ? 'Você já viu tudo' : 'Carregar mais itens'}
+        aria-label={
+          isComplete
+            ? 'Você já viu tudo'
+            : isLoading
+              ? 'Carregando mais itens'
+              : 'Carregar mais itens'
+        }
         aria-busy={isLoading}
       >
         <Button.Progress value={isComplete ? 100 : progress} />
         <Button.Label variant="load">
-          {isComplete ? 'Você já viu tudo' : 'Carregar mais'}
+          {isLoading ? (
+            <Button.Spinner className={styles.spinner} />
+          ) : isComplete ? (
+            'Você já viu tudo'
+          ) : (
+            'Carregar mais'
+          )}
         </Button.Label>
       </Button>
     </section>

@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google';
 import { QueryProvider } from '@/store/QueryProvider';
 import { ReduxProvider } from '@/store/ReduxProvider';
 import './globals.scss';
+import styles from './layout.module.scss';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -48,6 +49,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={poppins.variable} style={{ height: '100%' }}>
       <body>
+        <a href="#main-content" className={styles.skipLink}>
+          Ir para o conteúdo
+        </a>
         <QueryProvider>
           <ReduxProvider>{children}</ReduxProvider>
         </QueryProvider>

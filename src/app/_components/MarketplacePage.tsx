@@ -236,7 +236,9 @@ export function MarketplacePage() {
         />
 
         <div className={styles.wrapper}>
-          <main className={styles.main}>
+          <main id="main-content" className={styles.main}>
+            <h1 className="visuallyHidden">Marketplace de NFTs</h1>
+
             {isLoading ? <CatalogSkeleton /> : null}
 
             {isError ? (
@@ -278,6 +280,7 @@ export function MarketplacePage() {
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
         onChangeQuantity={handleChangeQuantity}
+        returnFocusRef={cartButtonRef}
       />
     </>
   );

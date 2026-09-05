@@ -10,6 +10,9 @@ import { getProductsInfiniteQueryOptions } from '@/services/products/productsQue
 export const metadata: Metadata = {
   title: 'Explorar NFTs',
   description: 'Catálogo de NFTs disponíveis no marketplace Starsoft.',
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default async function Home() {

@@ -31,6 +31,9 @@ export async function generateMetadata({
   return {
     title: nft.title,
     description: nft.description,
+    alternates: {
+      canonical: `/nft/${id}`,
+    },
     openGraph: {
       title: nft.title,
       description: nft.description,

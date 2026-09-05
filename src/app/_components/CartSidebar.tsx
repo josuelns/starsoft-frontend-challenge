@@ -1,12 +1,13 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { CartEmptyState } from '@/components/cart/CartEmptyState';
 import { CartItem as CartItemRow } from '@/components/cart/CartItem';
 import type { CartItem } from '@/domain/nft/types';
 import { cartItemExitTransition, drawerTransition } from '@/lib/motion';
+import { useFocusTrap } from '@/lib/useFocusTrap';
 import styles from './CartSidebar.module.scss';
 
 type CartSidebarProps = {
@@ -19,6 +20,7 @@ type CartSidebarProps = {
   onIncreaseQuantity: (id: string) => void;
   onDecreaseQuantity: (id: string) => void;
   onChangeQuantity: (id: string, quantity: number) => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 };
 
 function cx(...classes: (string | undefined | false | null)[]) {
@@ -35,9 +37,13 @@ export function CartSidebar({
   onIncreaseQuantity,
   onDecreaseQuantity,
   onChangeQuantity,
+  returnFocusRef,
 }: CartSidebarProps) {
   const cartLines = lines;
   const prefersReducedMotion = useReducedMotion();
+  const drawerRef = useRef<HTMLElement>(null);
+
+  useFocusTrap(drawerRef, isOpen, returnFocusRef);
 
   useEffect(() => {
     document.body.classList.toggle('cart-drawer-open', isOpen);
@@ -72,7 +78,7 @@ export function CartSidebar({
             className={styles.overlay}
             onClick={onClose}
           />
-          <CartDrawer key="cart-drawer" open>
+          <CartDrawer key="cart-drawer" ref={drawerRef} open>
             <CartDrawer.Header>
               <CartDrawer.Back onClick={onClose} />
               <CartDrawer.Title>Mochila de Compras</CartDrawer.Title>

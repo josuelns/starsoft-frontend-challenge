@@ -78,9 +78,21 @@ function ButtonSpinner({ className }: ButtonSpinnerProps) {
 }
 
 function ButtonProgress({ value = 47, className }: ButtonProgressProps) {
+  const clampedValue = Math.min(100, Math.max(0, value));
+
   return (
-    <div className={[styles.progressTrack, className].filter(Boolean).join(' ')}>
-      <div className={styles.progressFill} style={{ width: `${value}%` }} />
+    <div
+      role="progressbar"
+      aria-valuenow={clampedValue}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Progresso do catálogo"
+      className={[styles.progressTrack, className].filter(Boolean).join(' ')}
+    >
+      <div
+        className={styles.progressFill}
+        style={{ width: `${clampedValue}%` }}
+      />
     </div>
   );
 }

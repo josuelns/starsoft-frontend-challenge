@@ -129,7 +129,7 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
         />
 
         <div className={styles.wrapper}>
-          <main className={styles.main}>
+          <main id="main-content" className={styles.main}>
             <NftDetailView
               item={item}
               isAdded={isAdded}
@@ -151,6 +151,7 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
         onChangeQuantity={handleChangeQuantity}
+        returnFocusRef={cartButtonRef}
       />
     </>
   );

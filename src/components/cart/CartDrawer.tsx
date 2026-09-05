@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { ComponentProps, ReactNode } from 'react';
+import { forwardRef, type ComponentProps, type ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
 import { drawerTransition } from '@/lib/motion';
@@ -31,20 +31,25 @@ function cx(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-function CartDrawerRoot({ children, open = true, className }: CartDrawerRootProps) {
-  return (
-    <motion.aside
-      aria-labelledby={drawerTitleId}
-      initial={{ x: '100%' }}
-      animate={{ x: open ? 0 : '100%' }}
-      exit={{ x: '100%' }}
-      transition={drawerTransition}
-      className={cx(styles.aside, className)}
-    >
-      {children}
-    </motion.aside>
-  );
-}
+const CartDrawerRoot = forwardRef<HTMLElement, CartDrawerRootProps>(
+  function CartDrawerRoot({ children, open = true, className }, ref) {
+    return (
+      <motion.aside
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={drawerTitleId}
+        initial={{ x: '100%' }}
+        animate={{ x: open ? 0 : '100%' }}
+        exit={{ x: '100%' }}
+        transition={drawerTransition}
+        className={cx(styles.aside, className)}
+      >
+        {children}
+      </motion.aside>
+    );
+  },
+);
 
 function CartDrawerHeader({
   children,
