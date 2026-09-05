@@ -1,0 +1,101 @@
+@use 'styles/variables' as *;
+
+// =============================================================
+// Mixins de tipografia — espelham src/components/ui/typography.ts
+// =============================================================
+
+/// Título do item no carrinho
+@mixin title {
+  font-family: $font-sans;
+  font-size: 25px;
+  line-height: 25px;
+  font-weight: 600;
+  color: $brand-gray-light;
+}
+
+/// Título do card NFT (menor, para o grid)
+@mixin nft-title {
+  font-family: $font-sans;
+  font-size: 18px;
+  line-height: 140%;
+  font-weight: 500;
+  color: $brand-gray-light;
+}
+
+/// Descrição (subtítulo)
+@mixin description {
+  font-family: $font-sans;
+  font-size: 12px;
+  line-height: 12px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  color: $brand-gray-medium;
+}
+
+/// Preço em ETH
+@mixin price {
+  font-family: $font-sans;
+  font-size: 22px;
+  line-height: 22px;
+  font-weight: 600;
+  color: $brand-gray-light;
+}
+
+/// Texto do botão "Carregar mais"
+@mixin load-button-text {
+  font-family: $font-sans;
+  font-size: 26px;
+  line-height: 26px;
+  color: $brand-gray-light;
+}
+
+/// Texto do botão "Comprar"
+@mixin buy-button-text {
+  font-family: $font-sans;
+  font-size: 22px;
+  line-height: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $brand-gray-light;
+}
+
+/// Texto do botão "Finalizar compra"
+@mixin finish-button-text {
+  font-family: $font-sans;
+  font-size: 22px;
+  line-height: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $brand-gray-light;
+}
+
+/// Rótulo TOTAL do carrinho
+@mixin cart-total-label {
+  font-family: $font-sans;
+  font-size: 24px;
+  line-height: 26px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  color: $brand-gray-light;
+}
+
+/// Preço total do carrinho
+@mixin cart-total-price {
+  font-family: $font-sans;
+  font-size: 24px;
+  line-height: 26px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: $brand-gray-light;
+}
+
+/// Texto do rodapé
+@mixin footer-text {
+  font-family: $font-sans;
+  font-size: 12px;
+  line-height: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: $brand-gray-medium;
+}

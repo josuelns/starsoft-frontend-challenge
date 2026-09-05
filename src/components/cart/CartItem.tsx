@@ -3,14 +3,13 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState, type MouseEvent, type ReactNode } from 'react';
-import { Card } from '@/components/nft/NftCard';
-import { titleStyles } from '@/components/ui/typography';
+import { EthIcon } from '@/components/ui/EthIcon';
 import {
   CART_TRASH_REMOVE_MS,
   cartTrashRemoveTransition,
   cartTrashTapTransition,
 } from '@/lib/motion';
-import { cn } from '@/lib/utils';
+import styles from './CartItem.module.scss';
 
 type CartItemLayout = 'full' | 'compact';
 
@@ -44,18 +43,16 @@ type CartItemRemoveProps = {
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
-function CartItemRoot({
-  layout = 'full',
-  children,
-  className,
-}: CartItemRootProps) {
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
+function CartItemRoot({ layout = 'full', children, className }: CartItemRootProps) {
   return (
     <article
       data-layout={layout}
-      className={cn(
-        layout === 'full'
-          ? 'box-border flex h-[200px] w-full items-start gap-[20px] rounded bg-brand-cart-item-bg pt-[21px] pr-[30px] pb-[17px] pl-[26px]'
-          : 'flex items-center gap-4 py-3',
+      className={cx(
+        layout === 'full' ? styles.rootFull : styles.rootCompact,
         className,
       )}
     >
@@ -66,34 +63,41 @@ function CartItemRoot({
 
 function CartItemImage({ src, alt, className }: CartItemImageProps) {
   return (
-    <div
-      className={cn(
-        'relative h-[161px] w-[161px] shrink-0 overflow-hidden rounded bg-brand-card-bg',
-        className,
-      )}
-    >
+    <div className={cx(styles.imageBox, className)}>
       <Image
         src={src}
         alt={alt}
         fill
         sizes="161px"
-        className="object-contain"
+        className={styles.image}
       />
     </div>
   );
 }
 
 function CartItemContent({ children, className }: CartItemContentProps) {
+  return <div className={cx(styles.content, className)}>{children}</div>;
+}
+
+function CartItemTitle({ children, className }: { children: ReactNode; className?: string }) {
+  return <h2 className={cx(styles.title, className)}>{children}</h2>;
+}
+
+function CartItemDescription({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={cx(styles.description, className)}>{children}</p>;
+}
+
+function CartItemPrice({ value, className }: { value: string; className?: string }) {
   return (
-    <div
-      className={cn(
-        'flex h-[161px] min-w-0 flex-1 flex-col',
-        className,
-      )}
-    >
-      {children}
+    <div className={cx(styles.priceRow, className)}>
+      <EthIcon />
+      <span className={styles.priceText}>{value} ETH</span>
     </div>
   );
+}
+
+function CartItemActions({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cx(styles.actions, className)}>{children}</div>;
 }
 
 function CartItemQuantity({
@@ -108,26 +112,17 @@ function CartItemQuantity({
 
   const commitDraft = () => {
     const parsed = Number.parseInt(draft, 10);
-
-    if (!Number.isFinite(parsed) || draft.trim() === '') {
-      return;
-    }
-
+    if (!Number.isFinite(parsed) || draft.trim() === '') return;
     onChange?.(parsed);
   };
 
   return (
-    <div
-      className={cn(
-        'flex h-[49px] w-[115px] shrink-0 items-center justify-between rounded bg-brand-dark-bg px-[8px] py-[12px]',
-        className,
-      )}
-    >
+    <div className={cx(styles.quantityBox, className)}>
       <button
         type="button"
         aria-label="Diminuir"
         onClick={onDecrease}
-        className="flex h-6 w-6 cursor-pointer items-center justify-center text-[16px] leading-none text-brand-gray-light transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+        className={styles.quantityBtn}
       >
         −
       </button>
@@ -149,17 +144,15 @@ function CartItemQuantity({
           commitDraft();
         }}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.currentTarget.blur();
-          }
+          if (event.key === 'Enter') event.currentTarget.blur();
         }}
-        className="w-10 min-w-0 border-0 bg-transparent p-0 text-center font-sans text-[16px] leading-4 text-brand-gray-light outline-none"
+        className={styles.quantityInput}
       />
       <button
         type="button"
         aria-label="Aumentar"
         onClick={onIncrease}
-        className="flex h-6 w-6 cursor-pointer items-center justify-center text-[16px] leading-none text-brand-gray-light transition-opacity hover:opacity-80"
+        className={styles.quantityBtn}
       >
         +
       </button>
@@ -172,9 +165,7 @@ function CartItemRemove({ className, onClick }: CartItemRemoveProps) {
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isRemoving) return;
-
     setIsRemoving(true);
-
     window.setTimeout(() => {
       onClick?.(event);
       setIsRemoving(false);
@@ -192,13 +183,8 @@ function CartItemRemove({ className, onClick }: CartItemRemoveProps) {
       }
       whileHover={isRemoving ? undefined : { scale: 1.06 }}
       whileTap={isRemoving ? undefined : { y: 6, scale: 0.9 }}
-      transition={
-        isRemoving ? cartTrashRemoveTransition : cartTrashTapTransition
-      }
-      className={cn(
-        'flex h-[43px] w-[43px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand-orange transition-opacity hover:opacity-90 disabled:cursor-not-allowed',
-        className,
-      )}
+      transition={isRemoving ? cartTrashRemoveTransition : cartTrashTapTransition}
+      className={cx(styles.removeBtn, className)}
       disabled={isRemoving}
       onClick={handleClick}
     >
@@ -213,41 +199,12 @@ function CartItemRemove({ className, onClick }: CartItemRemoveProps) {
   );
 }
 
-function CartItemTitle({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return <h2 className={cn(titleStyles, className)}>{children}</h2>;
-}
-
-function CartItemActions({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        'mt-[15px] flex w-full items-center justify-between',
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 export const CartItem = Object.assign(CartItemRoot, {
   Image: CartItemImage,
   Content: CartItemContent,
   Title: CartItemTitle,
-  Description: Card.Description,
-  Price: Card.Price,
+  Description: CartItemDescription,
+  Price: CartItemPrice,
   Quantity: CartItemQuantity,
   Remove: CartItemRemove,
   Actions: CartItemActions,

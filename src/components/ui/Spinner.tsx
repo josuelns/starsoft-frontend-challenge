@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import styles from './Spinner.module.scss';
 
 type SpinnerProps = {
   className?: string;
@@ -10,10 +10,7 @@ export function Spinner({ className, 'aria-label': ariaLabel }: SpinnerProps) {
     <span
       role="status"
       aria-label={ariaLabel ?? 'Carregando'}
-      className={cn(
-        'inline-block h-8 w-8 animate-spin rounded-full border-2 border-brand-gray-medium/30 border-t-brand-orange',
-        className,
-      )}
+      className={[styles.spinner, className].filter(Boolean).join(' ')}
     />
   );
 }

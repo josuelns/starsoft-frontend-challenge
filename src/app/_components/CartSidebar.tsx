@@ -7,7 +7,7 @@ import { CartEmptyState } from '@/components/cart/CartEmptyState';
 import { CartItem as CartItemRow } from '@/components/cart/CartItem';
 import type { CartItem } from '@/domain/nft/types';
 import { cartItemExitTransition, drawerTransition } from '@/lib/motion';
-import { cn } from '@/lib/utils';
+import styles from './CartSidebar.module.scss';
 
 type CartSidebarProps = {
   isOpen: boolean;
@@ -20,6 +20,10 @@ type CartSidebarProps = {
   onDecreaseQuantity: (id: string) => void;
   onChangeQuantity: (id: string, quantity: number) => void;
 };
+
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 export function CartSidebar({
   isOpen,
@@ -37,7 +41,6 @@ export function CartSidebar({
 
   useEffect(() => {
     document.body.classList.toggle('cart-drawer-open', isOpen);
-
     return () => {
       document.body.classList.remove('cart-drawer-open');
     };
@@ -47,13 +50,10 @@ export function CartSidebar({
     if (!isOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
+      if (event.key === 'Escape') onClose();
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
@@ -69,7 +69,7 @@ export function CartSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={drawerTransition}
-            className="fixed inset-0 z-40 bg-black/50"
+            className={styles.overlay}
             onClick={onClose}
           />
           <CartDrawer key="cart-drawer" open>
@@ -79,11 +79,9 @@ export function CartSidebar({
             </CartDrawer.Header>
             <CartDrawer.Body>
               <div
-                className={cn(
-                  'mx-auto my-auto flex w-full max-w-[620px] flex-col',
-                  cartLines.length === 0
-                    ? 'min-h-full flex-1 justify-center'
-                    : 'gap-[21px] pb-[16px]',
+                className={cx(
+                  styles.listWrapper,
+                  cartLines.length === 0 ? styles.listEmpty : styles.listWithItems,
                 )}
               >
                 {cartLines.length === 0 ? (
@@ -112,14 +110,14 @@ export function CartSidebar({
                               alt={item.imageAlt}
                             />
                             <CartItemRow.Content>
-                              <CartItemRow.Title className="line-clamp-1">
+                              <CartItemRow.Title className={styles.titleClamp}>
                                 {item.title}
                               </CartItemRow.Title>
-                              <CartItemRow.Description className="mt-[5px] line-clamp-1">
+                              <CartItemRow.Description className={styles.descriptionClamp}>
                                 {item.description}
                               </CartItemRow.Description>
                               <CartItemRow.Price
-                                className="mt-[15px]"
+                                className={styles.priceOffset}
                                 value={item.price}
                               />
                               <CartItemRow.Actions>

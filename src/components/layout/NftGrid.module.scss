@@ -1,0 +1,38 @@
+@use 'styles/variables' as *;
+@use 'styles/layout' as layout;
+
+.grid {
+  @include layout.nft-grid;
+}
+
+.cardWrapper {
+  width: $card-width;
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  transition: opacity 150ms ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.titleLink {
+  text-decoration: none;
+  transition: opacity 150ms ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.buyButtonAdded {
+  background-color: $brand-orange !important;
+
+  &:hover {
+    background-color: $brand-orange !important;
+    opacity: 0.9;
+  }
+}

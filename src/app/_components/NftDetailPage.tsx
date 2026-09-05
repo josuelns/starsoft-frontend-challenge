@@ -8,11 +8,6 @@ import {
 } from '@/components/cart/CartFlyLayer';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
-import {
-  MARKETPLACE_HORIZONTAL_PADDING_CLASS,
-  MARKETPLACE_MAX_WIDTH_CLASS,
-  MARKETPLACE_PAGE_SHELL_CLASS,
-} from '@/components/layout/marketplace-layout';
 import { NftDetailView } from '@/components/nft/NftDetailView';
 import type { Nft } from '@/domain/nft/types';
 import {
@@ -28,6 +23,7 @@ import {
   toggleCart,
 } from '@/store/cartSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import styles from './NftDetailPage.module.scss';
 
 const CartSidebar = dynamic(() =>
   import('./CartSidebar').then((mod) => ({ default: mod.CartSidebar })),
@@ -89,9 +85,7 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
 
   const handleRemoveLine = (id: string) => {
     const targetLine = cartItems.find((line) => line.item.id === id);
-
     if (!targetLine) return;
-
     for (let index = 0; index < targetLine.quantity; index += 1) {
       dispatch(removeProduct(id));
     }
@@ -99,9 +93,7 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
 
   const handleIncreaseQuantity = (id: string) => {
     const targetLine = cartItems.find((line) => line.item.id === id);
-
     if (!targetLine) return;
-
     dispatch(addProduct(targetLine.item));
   };
 
@@ -114,15 +106,11 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
   };
 
   const handleOpenCart = () => {
-    if (!isCartOpen) {
-      dispatch(toggleCart());
-    }
+    if (!isCartOpen) dispatch(toggleCart());
   };
 
   const handleCloseCart = () => {
-    if (isCartOpen) {
-      dispatch(toggleCart());
-    }
+    if (isCartOpen) dispatch(toggleCart());
   };
 
   const handleFinishPurchase = () => {
@@ -133,19 +121,15 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
     <>
       <CartFlyLayer items={flyingItems} onComplete={handleFlyComplete} />
 
-      <div className={MARKETPLACE_PAGE_SHELL_CLASS}>
+      <div className={styles.shell}>
         <Header
           ref={cartButtonRef}
           cartCount={cartCount}
           onCartClick={handleOpenCart}
         />
 
-        <div
-          className={`mx-auto flex w-full flex-1 flex-col ${MARKETPLACE_MAX_WIDTH_CLASS}`}
-        >
-          <main
-            className={`flex-1 ${MARKETPLACE_HORIZONTAL_PADDING_CLASS} pt-[130px] pb-[100px]`}
-          >
+        <div className={styles.wrapper}>
+          <main className={styles.main}>
             <NftDetailView
               item={item}
               isAdded={isAdded}
@@ -153,7 +137,7 @@ export function NftDetailPage({ productId }: NftDetailPageProps) {
             />
           </main>
 
-          <Footer className="mt-[100px]" />
+          <Footer className={styles.footer} />
         </div>
       </div>
 

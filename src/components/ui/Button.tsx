@@ -8,8 +8,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react';
-import { cn } from '@/lib/utils';
-import { buyButtonTextStyles, finishButtonTextStyles, loadButtonTextStyles } from './typography';
+import styles from './Button.module.scss';
 
 export type ButtonVariant = 'buy' | 'finish' | 'load';
 
@@ -33,11 +32,10 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   fullWidth?: boolean;
 };
 
-const variantStyles: Record<ButtonVariant, string> = {
-  buy: 'box-border h-[66px] cursor-pointer bg-brand-buy-bg px-[26px] py-[10px] text-brand-gray-light shadow-[0_50px_100px_-20px_rgba(50,50,93,0.25)] transition-colors duration-300 ease-out hover:opacity-90',
-  finish:
-    'box-border h-[81px] min-h-[81px] max-h-[81px] shrink-0 bg-brand-orange px-[26px] py-[10px] text-brand-gray-light shadow-[0_50px_100px_-20px_rgba(50,50,93,0.25)] transition-opacity hover:opacity-90',
-  load: 'group/load flex h-[107px] w-full cursor-pointer flex-col items-stretch gap-[11px] bg-transparent p-0 disabled:cursor-not-allowed',
+const variantClass: Record<ButtonVariant, string> = {
+  buy: styles.variantBuy,
+  finish: styles.variantFinish,
+  load: styles.variantLoad,
 };
 
 function injectVariant(children: ReactNode, variant: ButtonVariant): ReactNode {
@@ -56,23 +54,15 @@ function injectVariant(children: ReactNode, variant: ButtonVariant): ReactNode {
 }
 
 function ButtonLabel({ variant = 'buy', className, children }: ButtonLabelProps) {
-  const isLoad = variant === 'load';
-  const isFinish = variant === 'finish';
+  const labelStyle =
+    variant === 'load'
+      ? styles.labelLoad
+      : variant === 'finish'
+        ? styles.labelFinish
+        : styles.labelBuy;
 
   return (
-    <span
-      className={cn(
-        isLoad
-          ? cn(
-              loadButtonTextStyles,
-              'flex h-[86px] w-full items-center justify-center rounded bg-brand-gray-dark transition-colors duration-300 ease-out group-hover/load:bg-brand-orange group-disabled/load:bg-brand-gray-dark',
-            )
-          : isFinish
-            ? finishButtonTextStyles
-            : buyButtonTextStyles,
-        className,
-      )}
-    >
+    <span className={[labelStyle, className].filter(Boolean).join(' ')}>
       {children}
     </span>
   );
@@ -82,26 +72,15 @@ function ButtonSpinner({ className }: ButtonSpinnerProps) {
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        'inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white',
-        className,
-      )}
+      className={[styles.spinner, className].filter(Boolean).join(' ')}
     />
   );
 }
 
 function ButtonProgress({ value = 47, className }: ButtonProgressProps) {
   return (
-    <div
-      className={cn(
-        'h-[10px] w-full overflow-hidden rounded-full bg-brand-gray-dark',
-        className,
-      )}
-    >
-      <div
-        className="h-full rounded-full bg-brand-orange transition-[width] duration-500 ease-out"
-        style={{ width: `${value}%` }}
-      />
+    <div className={[styles.progressTrack, className].filter(Boolean).join(' ')}>
+      <div className={styles.progressFill} style={{ width: `${value}%` }} />
     </div>
   );
 }
@@ -115,20 +94,17 @@ function ButtonRoot({
   ...props
 }: ButtonProps) {
   const isLoad = variant === 'load';
+  const classes = [
+    styles.root,
+    variantClass[variant],
+    !isLoad && fullWidth ? styles.fullWidth : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <button
-      type={type}
-      className={cn(
-        isLoad ? 'flex' : 'inline-flex',
-        'items-center justify-center rounded font-sans disabled:cursor-not-allowed disabled:opacity-60',
-        variant !== 'buy' && !isLoad && 'transition-opacity hover:opacity-90',
-        variantStyles[variant],
-        fullWidth && !isLoad && 'w-full',
-        className,
-      )}
-      {...props}
-    >
+    <button type={type} className={classes} {...props}>
       {isLoad ? children : injectVariant(children, variant)}
     </button>
   );

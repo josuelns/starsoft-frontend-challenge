@@ -9,7 +9,7 @@ import {
   cardEnterTransition,
   cardHoverTransition,
 } from '@/lib/motion';
-import { cn } from '@/lib/utils';
+import styles from './NftGrid.module.scss';
 
 type NftGridProps = {
   items: Nft[];
@@ -18,6 +18,10 @@ type NftGridProps = {
   animateFromIndex?: number;
   className?: string;
 };
+
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 export function NftGrid({
   items,
@@ -29,15 +33,7 @@ export function NftGrid({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <div
-      className={cn(
-        'mx-auto grid w-full max-w-[1455px] gap-[25px]',
-        'grid-cols-[repeat(4,345px)] justify-center',
-        'max-[1502px]:grid-cols-[repeat(2,345px)]',
-        'max-[762px]:grid-cols-[repeat(1,345px)]',
-        className,
-      )}
-    >
+    <div className={cx(styles.grid, className)}>
       {items.map((item, index) => {
         const isAdded = addedIds.has(item.id);
         const shouldAnimate = index >= animateFromIndex;
@@ -45,7 +41,7 @@ export function NftGrid({
         return (
           <motion.div
             key={item.id}
-            className="w-[345px]"
+            className={styles.cardWrapper}
             initial={
               shouldAnimate && !prefersReducedMotion
                 ? { opacity: 0, y: 20 }
@@ -65,38 +61,30 @@ export function NftGrid({
             <Card>
               <Link
                 href={`/nft/${item.id}`}
-                className="block transition-opacity hover:opacity-90"
+                className={styles.cardLink}
                 aria-label={`Ver detalhes de ${item.title}`}
               >
                 <Card.Image src={item.imageSrc} alt={item.imageAlt} />
               </Link>
               <Card.Content>
                 <Card.Body>
-                  <Link
-                    href={`/nft/${item.id}`}
-                    className="transition-opacity hover:opacity-80"
-                  >
+                  <Link href={`/nft/${item.id}`} className={styles.titleLink}>
                     <Card.Title>{item.title}</Card.Title>
                   </Link>
                   <Card.Description>{item.description}</Card.Description>
                   <Card.Price value={item.price} />
                 </Card.Body>
                 <Card.BuyButton
+                  added={isAdded}
                   onClick={(event) => {
                     if (isAdded) return;
-
                     const sourceEl =
                       event.currentTarget
                         .closest('article')
                         ?.querySelector<HTMLElement>('[data-cart-fly-source]') ??
                       null;
-
                     onBuy(item, sourceEl);
                   }}
-                  className={cn(
-                    isAdded &&
-                      'bg-brand-orange hover:bg-brand-orange hover:opacity-90',
-                  )}
                   aria-label={
                     isAdded
                       ? `${item.imageAlt} adicionado ao carrinho`

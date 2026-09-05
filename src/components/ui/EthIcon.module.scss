@@ -1,0 +1,21 @@
+@use 'styles/variables' as *;
+
+.icon {
+  flex-shrink: 0;
+}
+
+.pathLight {
+  fill: $brand-eth-light;
+}
+
+.pathDark {
+  fill: $brand-eth;
+}
+
+.pathMidLight {
+  fill: rgba($brand-eth-dark, 0.5);
+}
+
+.pathMid {
+  fill: $brand-eth-dark;
+}

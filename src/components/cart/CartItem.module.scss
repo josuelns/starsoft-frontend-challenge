@@ -1,0 +1,179 @@
+@use 'styles/variables' as *;
+@use 'styles/typography' as typo;
+
+// =============================================================
+// Raiz do item
+// =============================================================
+
+.rootFull {
+  box-sizing: border-box;
+  display: flex;
+  height: 200px;
+  width: 100%;
+  align-items: flex-start;
+  gap: 20px;
+  border-radius: $radius;
+  background-color: $brand-cart-item-bg;
+  padding: 21px 30px 17px 26px;
+}
+
+.rootCompact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+// =============================================================
+// Imagem
+// =============================================================
+
+.imageBox {
+  position: relative;
+  height: 161px;
+  width: 161px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: $radius;
+  background-color: $brand-card-bg;
+}
+
+.image {
+  object-fit: contain;
+}
+
+// =============================================================
+// Conteúdo
+// =============================================================
+
+.content {
+  display: flex;
+  height: 161px;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+// =============================================================
+// Tipografia do item
+// =============================================================
+
+.title {
+  @include typo.title;
+}
+
+.description {
+  @include typo.description;
+  margin: 5px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.priceRow {
+  margin-top: 15px;
+  display: flex;
+  height: 29px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.priceText {
+  @include typo.price;
+}
+
+// =============================================================
+// Ações (quantidade + remover)
+// =============================================================
+
+.actions {
+  margin-top: 15px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// =============================================================
+// Controle de quantidade
+// =============================================================
+
+.quantityBox {
+  display: flex;
+  height: 49px;
+  width: 115px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: $radius;
+  background-color: $brand-dark-bg;
+  padding: 12px 8px;
+}
+
+.quantityBtn {
+  display: flex;
+  height: 1.5rem;
+  width: 1.5rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  color: $brand-gray-light;
+  transition: opacity 150ms ease;
+  background: transparent;
+  border: 0;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+}
+
+.quantityInput {
+  width: 2.5rem;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: center;
+  font-family: $font-sans;
+  font-size: 16px;
+  line-height: 1rem;
+  color: $brand-gray-light;
+  outline: none;
+}
+
+// =============================================================
+// Botão de remover
+// =============================================================
+
+.removeBtn {
+  display: flex;
+  height: 43px;
+  width: 43px;
+  flex-shrink: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-full;
+  background-color: $brand-orange;
+  transition: opacity 150ms ease;
+  border: 0;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

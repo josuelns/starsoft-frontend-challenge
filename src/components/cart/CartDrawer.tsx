@@ -4,9 +4,8 @@ import { motion } from 'framer-motion';
 import type { ComponentProps, ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
-import { cartTotalLabelStyles, cartTotalPriceStyles } from '@/components/ui/typography';
 import { drawerTransition } from '@/lib/motion';
-import { cn } from '@/lib/utils';
+import styles from './CartDrawer.module.scss';
 
 const drawerTitleId = 'cart-drawer-title';
 
@@ -28,6 +27,10 @@ type CartDrawerTotalProps = {
 
 type CartDrawerFinishButtonProps = ButtonProps;
 
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
 function CartDrawerRoot({ children, open = true, className }: CartDrawerRootProps) {
   return (
     <motion.aside
@@ -36,10 +39,7 @@ function CartDrawerRoot({ children, open = true, className }: CartDrawerRootProp
       animate={{ x: open ? 0 : '100%' }}
       exit={{ x: '100%' }}
       transition={drawerTransition}
-      className={cn(
-        'fixed top-0 right-0 z-50 flex h-dvh w-full max-w-[679px] flex-col bg-brand-dark-bg shadow-[-29px_0_9.8px_0_rgba(0,0,0,0.1)]',
-        className,
-      )}
+      className={cx(styles.aside, className)}
     >
       {children}
     </motion.aside>
@@ -54,14 +54,7 @@ function CartDrawerHeader({
   className?: string;
 }) {
   return (
-    <header
-      className={cn(
-        'relative flex h-[100px] shrink-0 items-center justify-center px-[30px]',
-        className,
-      )}
-    >
-      {children}
-    </header>
+    <header className={cx(styles.header, className)}>{children}</header>
   );
 }
 
@@ -70,10 +63,7 @@ function CartDrawerBack({ className, ...props }: ComponentProps<'button'>) {
     <button
       type="button"
       aria-label="Voltar"
-      className={cn(
-        'absolute left-[30px] flex h-[60px] w-[60px] cursor-pointer items-center justify-center rounded-full bg-brand-gray-dark text-brand-gray-light transition-opacity hover:opacity-80',
-        className,
-      )}
+      className={cx(styles.backBtn, className)}
       {...props}
     >
       <svg
@@ -83,7 +73,7 @@ function CartDrawerBack({ className, ...props }: ComponentProps<'button'>) {
         viewBox="0 0 18 14"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0"
+        className={styles.backIcon}
       >
         <path
           d="M6.5 1L1 7L6.5 13"
@@ -105,13 +95,7 @@ function CartDrawerBack({ className, ...props }: ComponentProps<'button'>) {
 
 function CartDrawerTitle({ children, className }: CartDrawerTitleProps) {
   return (
-    <h2
-      id={drawerTitleId}
-      className={cn(
-        'font-sans text-[24px] leading-[110%] font-medium tracking-normal text-brand-gray-light',
-        className,
-      )}
-    >
+    <h2 id={drawerTitleId} className={cx(styles.title, className)}>
       {children}
     </h2>
   );
@@ -125,12 +109,7 @@ function CartDrawerBody({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        'cart-drawer-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-[30px]',
-        className,
-      )}
-    >
+    <div className={cx('cart-drawer-scroll', styles.body, className)}>
       {children}
     </div>
   );
@@ -144,24 +123,17 @@ function CartDrawerFooter({
   className?: string;
 }) {
   return (
-    <footer className={cn('mt-[10px] flex w-full max-w-[620px] flex-col pb-[16px]', className)}>
-      {children}
-    </footer>
+    <footer className={cx(styles.footer, className)}>{children}</footer>
   );
 }
 
 function CartDrawerTotal({ value, className }: CartDrawerTotalProps) {
   return (
-    <div
-      className={cn(
-        'mb-[40px] flex h-[34px] w-full max-w-[579px] items-center justify-between',
-        className,
-      )}
-    >
-      <span className={cartTotalLabelStyles}>TOTAL</span>
-      <div className="flex items-center gap-[10px]">
+    <div className={cx(styles.totalRow, className)}>
+      <span className={styles.totalLabel}>TOTAL</span>
+      <div className={styles.totalPriceWrapper}>
         <EthIcon size={34} />
-        <span className={cartTotalPriceStyles}>{value} ETH</span>
+        <span className={styles.totalPrice}>{value} ETH</span>
       </div>
     </div>
   );
@@ -175,7 +147,7 @@ function CartDrawerFinishButton({
   return (
     <Button
       variant="finish"
-      className={cn('w-full max-w-[620px]', className)}
+      className={cx(styles.finishButton, className)}
       {...props}
     >
       {typeof children === 'string' ? (

@@ -1,0 +1,71 @@
+@use 'styles/variables' as *;
+
+.header {
+  box-sizing: border-box;
+  height: 100px;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.21);
+  background-color: $brand-dark-bg;
+}
+
+.container {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100%;
+  width: 100%;
+  max-width: $marketplace-max-width;
+}
+
+.logoLink {
+  position: absolute;
+  top: 33px;
+  left: 41px;
+}
+
+.logo {
+  height: 38px;
+  width: 101px;
+  flex-shrink: 0;
+  transition: opacity 150ms ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.cartButton {
+  position: absolute;
+  top: 23.5px;
+  right: 43px;
+  display: flex;
+  height: 53px;
+  min-width: 74px;
+  cursor: pointer;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+
+  &:hover .cartIcon {
+    opacity: 0.7;
+  }
+}
+
+.cartIcon {
+  height: 33px;
+  width: 33px;
+  flex-shrink: 0;
+  transition: opacity 300ms ease;
+}
+
+.cartCount {
+  min-width: 12px;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.29px;
+  color: $brand-gray-light;
+  font-variant-numeric: tabular-nums;
+}

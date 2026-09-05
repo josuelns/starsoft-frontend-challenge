@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useLayoutEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
+import styles from './CartFlyLayer.module.scss';
 
 export type CartFlyPayload = {
   id: string;
@@ -22,6 +22,10 @@ type CartFlyItemProps = {
   item: CartFlyPayload;
   onComplete: (id: string) => void;
 };
+
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 function CartFlyItem({ item, onComplete }: CartFlyItemProps) {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -47,34 +51,11 @@ function CartFlyItem({ item, onComplete }: CartFlyItemProps) {
 
     const animation = node.animate(
       [
-        {
-          left: `${startX}px`,
-          top: `${startY}px`,
-          width: `${startSize}px`,
-          height: `${startSize}px`,
-          opacity: 1,
-        },
-        {
-          left: `${arcX}px`,
-          top: `${arcY}px`,
-          width: `${startSize * 0.7}px`,
-          height: `${startSize * 0.7}px`,
-          opacity: 1,
-          offset: 0.55,
-        },
-        {
-          left: `${endX}px`,
-          top: `${endY}px`,
-          width: `${endSize}px`,
-          height: `${endSize}px`,
-          opacity: 0,
-        },
+        { left: `${startX}px`, top: `${startY}px`, width: `${startSize}px`, height: `${startSize}px`, opacity: 1 },
+        { left: `${arcX}px`, top: `${arcY}px`, width: `${startSize * 0.7}px`, height: `${startSize * 0.7}px`, opacity: 1, offset: 0.55 },
+        { left: `${endX}px`, top: `${endY}px`, width: `${endSize}px`, height: `${endSize}px`, opacity: 0 },
       ],
-      {
-        duration: 700,
-        easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
-        fill: 'forwards',
-      },
+      { duration: 700, easing: 'cubic-bezier(0.33, 1, 0.68, 1)', fill: 'forwards' },
     );
 
     const handleFinish = () => onComplete(item.id);
@@ -87,17 +68,13 @@ function CartFlyItem({ item, onComplete }: CartFlyItemProps) {
   }, [item, onComplete]);
 
   return (
-    <div
-      ref={nodeRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed top-0 left-0 z-[100] overflow-hidden rounded bg-brand-card-image-bg shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
-    >
+    <div ref={nodeRef} aria-hidden="true" className={styles.flyItem}>
       <Image
         src={item.imageSrc}
         alt=""
         fill
         sizes="96px"
-        className="object-contain p-1"
+        className={styles.flyImage}
       />
     </div>
   );
@@ -107,7 +84,7 @@ export function CartFlyLayer({ items, onComplete, className }: CartFlyLayerProps
   if (items.length === 0) return null;
 
   return (
-    <div className={cn('pointer-events-none', className)} aria-hidden="true">
+    <div className={cx(styles.layer, className)} aria-hidden="true">
       {items.map((item) => (
         <CartFlyItem key={item.id} item={item} onComplete={onComplete} />
       ))}

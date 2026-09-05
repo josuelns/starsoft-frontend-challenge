@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import { QueryProvider } from '@/store/QueryProvider';
 import { ReduxProvider } from '@/store/ReduxProvider';
-import './globals.css';
+import './globals.scss';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -46,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${poppins.variable} h-full`}>
-      <body className="flex min-h-dvh flex-col bg-brand-dark-bg">
+    <html lang="pt-BR" className={poppins.variable} style={{ height: '100%' }}>
+      <body>
         <QueryProvider>
           <ReduxProvider>{children}</ReduxProvider>
         </QueryProvider>

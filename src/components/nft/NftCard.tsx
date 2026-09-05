@@ -6,8 +6,7 @@ import type { ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
 import { Spinner } from '@/components/ui/Spinner';
-import { descriptionStyles, nftTitleStyles, priceStyles } from '@/components/ui/typography';
-import { cn } from '@/lib/utils';
+import styles from './NftCard.module.scss';
 
 type CardRootProps = {
   children: ReactNode;
@@ -35,44 +34,31 @@ type CardPriceProps = {
   className?: string;
 };
 
-type CardBuyButtonProps = ButtonProps;
+type CardBuyButtonProps = ButtonProps & { added?: boolean };
+
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 function CardRoot({ children, className }: CardRootProps) {
   return (
-    <article
-      className={cn(
-        'box-border flex h-[533px] w-[345px] shrink-0 flex-col overflow-hidden rounded bg-brand-card-bg pb-[22px] shadow-[0_1px_2px_0_rgba(0,0,0,0.1)]',
-        className,
-      )}
-    >
-      {children}
-    </article>
+    <article className={cx(styles.card, className)}>{children}</article>
   );
 }
 
 function CardImage({ src, alt, className }: CardImageProps) {
-  return (
-    <CardImageContent key={src} src={src} alt={alt} className={className} />
-  );
+  return <CardImageContent key={src} src={src} alt={alt} className={className} />;
 }
 
 function CardImageContent({ src, alt, className }: CardImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div
-      className={cn(
-        'flex shrink-0 justify-center px-[24.5px] pt-[26px]',
-        className,
-      )}
-    >
-      <div
-        data-cart-fly-source
-        className="relative h-[258px] w-[296px] overflow-hidden rounded-[4px] bg-brand-card-image-bg"
-      >
+    <div className={cx(styles.imageWrapper, className)}>
+      <div data-cart-fly-source className={styles.imageBox}>
         {!isLoaded ? (
           <Spinner
-            className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
+            className={styles.spinnerCenter}
             aria-label={`Carregando imagem de ${alt}`}
           />
         ) : null}
@@ -81,10 +67,7 @@ function CardImageContent({ src, alt, className }: CardImageProps) {
           alt={alt}
           fill
           sizes="296px"
-          className={cn(
-            'object-fill transition-opacity duration-300',
-            isLoaded ? 'opacity-100' : 'opacity-0',
-          )}
+          className={cx(styles.image, isLoaded ? styles.imageVisible : styles.imageHidden)}
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(true)}
         />
@@ -94,69 +77,45 @@ function CardImageContent({ src, alt, className }: CardImageProps) {
 }
 
 function CardTitle({ children, className }: CardTitleProps) {
-  return <h2 className={cn(nftTitleStyles, 'm-0', className)}>{children}</h2>;
+  return <h2 className={cx(styles.title, className)}>{children}</h2>;
 }
 
 function CardDescription({ children, className }: CardDescriptionProps) {
-  return (
-    <p className={cn(descriptionStyles, 'm-0 mt-[5px] line-clamp-1', className)}>
-      {children}
-    </p>
-  );
+  return <p className={cx(styles.description, className)}>{children}</p>;
 }
 
 function CardPrice({ value, className }: CardPriceProps) {
   return (
-    <div
-      className={cn(
-        'mt-[24px] flex h-[29px] shrink-0 items-center gap-[10px]',
-        className,
-      )}
-    >
+    <div className={cx(styles.priceRow, className)}>
       <EthIcon />
-      <span className={priceStyles}>{value} ETH</span>
+      <span className={styles.priceText}>{value} ETH</span>
     </div>
   );
 }
 
-type CardContentProps = {
-  children: ReactNode;
-  className?: string;
-};
-
-function CardContent({ children, className }: CardContentProps) {
-  return (
-    <div
-      className={cn(
-        'mt-[41px] flex h-[186px] flex-col px-[24.5px]',
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
+function CardContent({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cx(styles.content, className)}>{children}</div>;
 }
 
 function CardBody({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('flex flex-col', className)}>{children}</div>;
+  return <div className={cx(styles.body, className)}>{children}</div>;
 }
 
 function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={cn('mt-auto flex w-full flex-col', className)}>{children}</div>
-  );
+  return <div className={cx(styles.footer, className)}>{children}</div>;
 }
 
 function CardBuyButton({
   children = 'COMPRAR',
   className,
   variant = 'buy',
+  added,
   ...props
 }: CardBuyButtonProps) {
   return (
     <Button
       variant={variant}
-      className={cn('mt-[24px] h-[66px] w-[296px] shrink-0', className)}
+      className={cx(styles.buyButton, added ? styles.buyButtonAdded : undefined, className)}
       {...props}
     >
       {typeof children === 'string' ? (

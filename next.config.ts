@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  sassOptions: {
+    loadPaths: [path.join(process.cwd(), 'src')],
+  },
   experimental: {
     optimizePackageImports: [
       '@reduxjs/toolkit',

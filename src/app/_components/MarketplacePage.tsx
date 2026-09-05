@@ -15,11 +15,6 @@ import {
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { LoadMoreSection } from '@/components/layout/LoadMoreSection';
-import {
-  MARKETPLACE_HORIZONTAL_PADDING_CLASS,
-  MARKETPLACE_MAX_WIDTH_CLASS,
-  MARKETPLACE_PAGE_SHELL_CLASS,
-} from '@/components/layout/marketplace-layout';
 import { NftGrid } from '@/components/layout/NftGrid';
 import type { Nft } from '@/domain/nft/types';
 import {
@@ -35,6 +30,7 @@ import {
   toggleCart,
 } from '@/store/cartSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import styles from './MarketplacePage.module.scss';
 
 const ITEM_REVEAL_DELAY_MS = 120;
 
@@ -73,8 +69,7 @@ export function MarketplacePage() {
     [catalog, visibleCount],
   );
   const effectiveTotal = Math.max(totalCount, catalog.length);
-  const isCatalogComplete =
-    !hasNextPage && visibleCount >= effectiveTotal;
+  const isCatalogComplete = !hasNextPage && visibleCount >= effectiveTotal;
   const catalogProgress = getCatalogProgress(
     visibleCount,
     totalCount,
@@ -89,9 +84,7 @@ export function MarketplacePage() {
   const cartCount = useMemo(() => getCartItemCount(cartItems), [cartItems]);
 
   const revealItems = (startIndex: number, targetCount: number) => {
-    if (revealTimerRef.current) {
-      clearTimeout(revealTimerRef.current);
-    }
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
 
     setIsRevealing(true);
     setAnimateFromIndex(startIndex);
@@ -109,9 +102,7 @@ export function MarketplacePage() {
 
       setIsRevealing(false);
 
-      if (startIndex === 0) {
-        setHasInitialRevealCompleted(true);
-      }
+      if (startIndex === 0) setHasInitialRevealCompleted(true);
     };
 
     revealTimerRef.current = setTimeout(revealNextItem, ITEM_REVEAL_DELAY_MS);
@@ -146,9 +137,7 @@ export function MarketplacePage() {
 
   useEffect(() => {
     return () => {
-      if (revealTimerRef.current) {
-        clearTimeout(revealTimerRef.current);
-      }
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
     };
   }, []);
 
@@ -182,9 +171,7 @@ export function MarketplacePage() {
 
   const handleRemoveLine = (id: string) => {
     const targetLine = cartItems.find((line) => line.item.id === id);
-
     if (!targetLine) return;
-
     for (let index = 0; index < targetLine.quantity; index += 1) {
       dispatch(removeProduct(id));
     }
@@ -192,9 +179,7 @@ export function MarketplacePage() {
 
   const handleIncreaseQuantity = (id: string) => {
     const targetLine = cartItems.find((line) => line.item.id === id);
-
     if (!targetLine) return;
-
     dispatch(addProduct(targetLine.item));
   };
 
@@ -207,15 +192,11 @@ export function MarketplacePage() {
   };
 
   const handleOpenCart = () => {
-    if (!isCartOpen) {
-      dispatch(toggleCart());
-    }
+    if (!isCartOpen) dispatch(toggleCart());
   };
 
   const handleCloseCart = () => {
-    if (isCartOpen) {
-      dispatch(toggleCart());
-    }
+    if (isCartOpen) dispatch(toggleCart());
   };
 
   const handleFinishPurchase = () => {
@@ -247,17 +228,15 @@ export function MarketplacePage() {
     <>
       <CartFlyLayer items={flyingItems} onComplete={handleFlyComplete} />
 
-      <div className={MARKETPLACE_PAGE_SHELL_CLASS}>
+      <div className={styles.shell}>
         <Header
           ref={cartButtonRef}
           cartCount={cartCount}
           onCartClick={handleOpenCart}
         />
 
-        <div className={`mx-auto flex w-full flex-1 flex-col ${MARKETPLACE_MAX_WIDTH_CLASS}`}>
-          <main
-            className={`flex-1 ${MARKETPLACE_HORIZONTAL_PADDING_CLASS} pt-[130px]`}
-          >
+        <div className={styles.wrapper}>
+          <main className={styles.main}>
             {isLoading ? <CatalogSkeleton /> : null}
 
             {isError ? (
@@ -274,7 +253,7 @@ export function MarketplacePage() {
                 />
                 {hasInitialRevealCompleted ? (
                   <LoadMoreSection
-                    className="mt-[130px]"
+                    className={styles.loadMore}
                     progress={catalogProgress}
                     isComplete={isCatalogComplete}
                     isLoading={isRevealing || isFetchingNextPage}
@@ -285,7 +264,7 @@ export function MarketplacePage() {
             ) : null}
           </main>
 
-          <Footer className="mt-[100px]" />
+          <Footer className={styles.footer} />
         </div>
       </div>
 

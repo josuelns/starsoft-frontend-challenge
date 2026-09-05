@@ -1,8 +1,12 @@
-import { cn } from '@/lib/utils';
+import styles from './CartEmptyState.module.scss';
 
 type CartEmptyStateProps = {
   className?: string;
 };
+
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 function CartEmptyBagIcon({ className }: { className?: string }) {
   return (
@@ -11,7 +15,7 @@ function CartEmptyBagIcon({ className }: { className?: string }) {
       viewBox="0 0 33 33"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn('h-[72px] w-[72px] text-brand-orange', className)}
+      className={cx(styles.icon, className)}
     >
       <path
         fillRule="evenodd"
@@ -49,21 +53,11 @@ function CartEmptyBagIcon({ className }: { className?: string }) {
 
 export function CartEmptyState({ className }: CartEmptyStateProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-1 flex-col items-center justify-center gap-6 py-10 text-center',
-        className,
-      )}
-    >
-      <div
-        aria-hidden="true"
-        className="flex h-[140px] w-[140px] items-center justify-center rounded-full bg-brand-gray-dark"
-      >
+    <div className={cx(styles.wrapper, className)}>
+      <div aria-hidden="true" className={styles.iconRing}>
         <CartEmptyBagIcon />
       </div>
-      <p className="max-w-[280px] font-sans text-[16px] leading-6 text-brand-gray-medium">
-        Sua mochila está vazia.
-      </p>
+      <p className={styles.text}>Sua mochila está vazia.</p>
     </div>
   );
 }

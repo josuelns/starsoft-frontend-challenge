@@ -1,0 +1,135 @@
+@use 'styles/variables' as *;
+@use 'styles/typography' as typo;
+
+// =============================================================
+// Card raiz
+// =============================================================
+
+.card {
+  box-sizing: border-box;
+  display: flex;
+  height: $card-height;
+  width: $card-width;
+  flex-shrink: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: $radius;
+  background-color: $brand-card-bg;
+  padding-bottom: 22px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+// =============================================================
+// Imagem
+// =============================================================
+
+.imageWrapper {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 26px 24.5px 0;
+}
+
+.imageBox {
+  position: relative;
+  height: 258px;
+  width: 296px;
+  overflow: hidden;
+  border-radius: $radius-sm;
+  background-color: $brand-card-image-bg;
+}
+
+.spinnerCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.image {
+  object-fit: fill;
+  transition: opacity 300ms ease;
+}
+
+.imageVisible {
+  opacity: 1;
+}
+
+.imageHidden {
+  opacity: 0;
+}
+
+// =============================================================
+// Conteúdo
+// =============================================================
+
+.content {
+  margin-top: 41px;
+  display: flex;
+  height: 186px;
+  flex-direction: column;
+  padding: 0 24.5px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+// =============================================================
+// Tipografia do card
+// =============================================================
+
+.title {
+  @include typo.nft-title;
+  margin: 0;
+}
+
+.description {
+  @include typo.description;
+  margin: 5px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// =============================================================
+// Preço
+// =============================================================
+
+.priceRow {
+  margin-top: 24px;
+  display: flex;
+  height: 29px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.priceText {
+  @include typo.price;
+}
+
+// =============================================================
+// Botão comprar
+// =============================================================
+
+.buyButton {
+  margin-top: 24px;
+  height: 66px;
+  width: 296px;
+  flex-shrink: 0;
+}
+
+.buyButtonAdded {
+  background-color: $brand-orange !important;
+}

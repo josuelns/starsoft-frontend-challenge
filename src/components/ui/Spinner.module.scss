@@ -1,0 +1,12 @@
+@use 'styles/variables' as *;
+@use 'styles/animations';
+
+.spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: $radius-full;
+  border: 2px solid rgba($brand-gray-medium, 0.3);
+  border-top-color: $brand-orange;
+  animation: spin 1s linear infinite;
+}

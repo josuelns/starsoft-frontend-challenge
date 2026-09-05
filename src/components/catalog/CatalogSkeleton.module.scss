@@ -1,0 +1,27 @@
+@use 'styles/variables' as *;
+@use 'styles/layout' as layout;
+
+.grid {
+  @include layout.nft-grid;
+}
+
+.item {
+  box-sizing: border-box;
+  height: $card-height;
+  width: $card-width;
+  flex-shrink: 0;
+  border-radius: $radius;
+  background-color: $brand-card-bg;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+  }
+}

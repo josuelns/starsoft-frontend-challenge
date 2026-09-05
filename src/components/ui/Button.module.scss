@@ -1,0 +1,155 @@
+@use 'styles/variables' as *;
+@use 'styles/typography' as typo;
+
+// =============================================================
+// Base do botão
+// =============================================================
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius;
+  font-family: $font-sans;
+  cursor: pointer;
+  border: 0;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+// =============================================================
+// Variante: buy
+// =============================================================
+
+.variantBuy {
+  box-sizing: border-box;
+  height: 66px;
+  background-color: $brand-buy-bg;
+  padding: 10px 26px;
+  color: $brand-gray-light;
+  box-shadow: 0 50px 100px -20px rgba(50, 50, 93, 0.25);
+  transition: opacity 300ms ease-out;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+// =============================================================
+// Variante: finish
+// =============================================================
+
+.variantFinish {
+  box-sizing: border-box;
+  height: 81px;
+  min-height: 81px;
+  max-height: 81px;
+  flex-shrink: 0;
+  background-color: $brand-orange;
+  padding: 10px 26px;
+  color: $brand-gray-light;
+  box-shadow: 0 50px 100px -20px rgba(50, 50, 93, 0.25);
+  transition: opacity 150ms ease-out;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+}
+
+// =============================================================
+// Variante: load
+// =============================================================
+
+.variantLoad {
+  display: flex;
+  height: 107px;
+  width: 100%;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 11px;
+  background: transparent;
+  padding: 0;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// =============================================================
+// Labels dos botões
+// =============================================================
+
+.labelBuy {
+  @include typo.buy-button-text;
+}
+
+.labelFinish {
+  @include typo.finish-button-text;
+}
+
+.labelLoad {
+  @include typo.load-button-text;
+  display: flex;
+  height: 86px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius;
+  background-color: $brand-gray-dark;
+  transition: background-color 300ms ease-out, color 300ms ease-out;
+
+  .variantLoad:hover:not(:disabled) & {
+    background-color: $brand-orange;
+  }
+
+  .variantLoad:disabled & {
+    background-color: $brand-gray-dark;
+  }
+}
+
+// =============================================================
+// Spinner inline (dentro do botão)
+// =============================================================
+
+.spinner {
+  display: inline-block;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: $radius-full;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// =============================================================
+// Barra de progresso
+// =============================================================
+
+.progressTrack {
+  height: 10px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: $radius-full;
+  background-color: $brand-gray-dark;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: $radius-full;
+  background-color: $brand-orange;
+  transition: width 500ms ease-out;
+}

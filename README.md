@@ -26,14 +26,14 @@ Marketplace de NFTs com carrinho de compras, desenvolvido como parte do desafio 
 | **React Query** | Cache e sincronização dos dados da API |
 | **Axios** | Cliente HTTP |
 | **Framer Motion** | Animações do grid, drawer e interações |
-| **Tailwind CSS v4** | Estilização (tokens alinhados ao Figma) |
+| **SASS + CSS Modules** | Estilização modular (variáveis, mixins e partials alinhados ao Figma) |
 | **Jest + Testing Library** | Testes unitários e de integração |
 | **Docker** | Ambiente de execução containerizado |
 | **Husky + lint-staged** | Qualidade de código no pre-commit |
 
 ### Escolhas técnicas
 
-- **Tailwind em vez de SASS:** o design system já está modelado com tokens (`brand-*`) no `tailwind.config.ts` e `globals.css`, mantendo estilos modulares sem duplicar camada SCSS.
+- **SASS + CSS Modules:** tokens da paleta definidos em `src/styles/_variables.scss` (`$brand-*`), mixins de tipografia em `_typography.scss`, layout em `_layout.scss`. Cada componente tem seu próprio `.module.scss`, garantindo escopo local e zero conflito de classes.
 - **Detalhe derivado do card:** o Figma não inclui tela de detalhe; `/nft/[id]` reutiliza tokens e componentes do marketplace, buscando o item na API paginada (`findProductById`).
 - **App Router em vez de Pages Router:** prefetch em Server Components substitui `getServerSideProps`; `metadata` substitui `next/head`.
 - **Prefetch no servidor:** a home e a rota de detalhe fazem prefetch no servidor e hidratam o React Query no cliente.
@@ -123,6 +123,13 @@ docker compose up --build -d
 src/
 ├── app/                  # App Router (home, nft/[id], layout)
 ├── components/           # UI reutilizável (cart, layout, nft, catalog)
+│   └── **/*.module.scss  # CSS Module por componente
+├── styles/               # Partials SASS globais
+│   ├── _variables.scss   # Tokens brand-* e constantes
+│   ├── _typography.scss  # Mixins de texto
+│   ├── _layout.scss      # Mixins de grid e container
+│   ├── _animations.scss  # Keyframes globais
+│   └── _reset.scss       # Normalize / reset
 ├── domain/               # Tipos e lógica pura (cart, nft)
 ├── services/             # API, React Query, mappers
 ├── store/                # Redux + React Query providers

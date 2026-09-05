@@ -1,0 +1,51 @@
+@use 'styles/variables' as *;
+@use 'styles/reset';
+@use 'styles/animations';
+
+// =============================================================
+// Estilos globais do corpo
+// =============================================================
+
+body {
+  background-color: $brand-dark-bg;
+  font-family: $font-sans;
+  color: $brand-gray-light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.cart-drawer-open {
+  overflow: hidden;
+}
+
+// =============================================================
+// Scrollbar customizada do drawer do carrinho
+// =============================================================
+
+.cart-drawer-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: $radius-full;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.32);
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+}

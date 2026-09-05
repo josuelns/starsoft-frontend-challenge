@@ -1,28 +1,23 @@
-import { cn } from '@/lib/utils';
+import styles from './CatalogSkeleton.module.scss';
 
 type CatalogSkeletonProps = {
   count?: number;
   className?: string;
 };
 
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
 export function CatalogSkeleton({ count = 8, className }: CatalogSkeletonProps) {
   return (
     <div
       aria-busy="true"
       aria-label="Carregando catálogo de NFTs"
-      className={cn(
-        'mx-auto grid w-full max-w-[1455px] gap-[25px]',
-        'grid-cols-[repeat(4,345px)] justify-center',
-        'max-[1502px]:grid-cols-[repeat(2,345px)]',
-        'max-[762px]:grid-cols-[repeat(1,345px)]',
-        className,
-      )}
+      className={cx(styles.grid, className)}
     >
       {Array.from({ length: count }, (_, index) => (
-        <div
-          key={index}
-          className="box-border h-[533px] w-[345px] shrink-0 animate-pulse rounded bg-brand-card-bg"
-        />
+        <div key={index} className={styles.item} />
       ))}
     </div>
   );

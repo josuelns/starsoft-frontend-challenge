@@ -1,28 +1,25 @@
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import styles from './CatalogErrorState.module.scss';
 
 type CatalogErrorStateProps = {
   onRetry?: () => void;
   className?: string;
 };
 
+function cx(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
 export function CatalogErrorState({ onRetry, className }: CatalogErrorStateProps) {
   return (
     <section
       aria-live="polite"
-      className={cn(
-        'mx-auto flex w-full max-w-[620px] flex-col items-center gap-6 rounded bg-brand-card-bg px-8 py-12 text-center',
-        className,
-      )}
+      className={cx(styles.section, className)}
     >
-      <h2 className="font-sans text-[20px] font-medium text-brand-gray-light">
-        Não foi possível carregar os NFTs
-      </h2>
-      <p className="font-sans text-[16px] leading-6 text-brand-gray-medium">
-        Verifique sua conexão e tente novamente.
-      </p>
+      <h2 className={styles.heading}>Não foi possível carregar os NFTs</h2>
+      <p className={styles.text}>Verifique sua conexão e tente novamente.</p>
       {onRetry ? (
-        <Button variant="buy" className="h-[56px] w-[240px]" onClick={onRetry}>
+        <Button variant="buy" className={styles.retryButton} onClick={onRetry}>
           <Button.Label>Tentar novamente</Button.Label>
         </Button>
       ) : null}
