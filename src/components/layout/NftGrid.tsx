@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import Link from 'next/link';
 import type { Nft } from '@/domain/nft/types';
 import { Card } from '@/components/nft/NftCard';
 import { Button } from '@/components/ui/Button';
@@ -62,10 +63,21 @@ export function NftGrid({
             }
           >
             <Card>
-              <Card.Image src={item.imageSrc} alt={item.imageAlt} />
+              <Link
+                href={`/nft/${item.id}`}
+                className="block transition-opacity hover:opacity-90"
+                aria-label={`Ver detalhes de ${item.title}`}
+              >
+                <Card.Image src={item.imageSrc} alt={item.imageAlt} />
+              </Link>
               <Card.Content>
                 <Card.Body>
-                  <Card.Title>{item.title}</Card.Title>
+                  <Link
+                    href={`/nft/${item.id}`}
+                    className="transition-opacity hover:opacity-80"
+                  >
+                    <Card.Title>{item.title}</Card.Title>
+                  </Link>
                   <Card.Description>{item.description}</Card.Description>
                   <Card.Price value={item.price} />
                 </Card.Body>

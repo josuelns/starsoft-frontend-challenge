@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { IBM_Plex_Sans } from 'next/font/google';
 import { MARKETPLACE_MAX_WIDTH_CLASS } from '@/components/layout/marketplace-layout';
 import { cn } from '@/lib/utils';
@@ -30,14 +31,16 @@ export const Header = forwardRef<HTMLButtonElement, HeaderProps>(
             MARKETPLACE_MAX_WIDTH_CLASS,
           )}
         >
-          <Image
-            src="/icons/logo.svg"
-            alt="Starsoft"
-            width={101}
-            height={38}
-            priority
-            className="absolute top-[33px] left-[41px] h-[38px] w-[101px] shrink-0"
-          />
+          <Link href="/" aria-label="Ir para o marketplace" className="absolute top-[33px] left-[41px]">
+            <Image
+              src="/icons/logo.svg"
+              alt="Starsoft"
+              width={101}
+              height={38}
+              priority
+              className="h-[38px] w-[101px] shrink-0 transition-opacity hover:opacity-80"
+            />
+          </Link>
           <button
             ref={ref}
             type="button"

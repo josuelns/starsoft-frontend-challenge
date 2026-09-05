@@ -16,6 +16,32 @@ export async function getProducts(
   return data;
 }
 
+export async function findProductById(
+  productId: string,
+): Promise<ProductsResponse['products'][number] | null> {
+  let page = 1;
+
+  while (true) {
+    const response = await getProducts({
+      page,
+      ...defaultProductsParams,
+    });
+
+    const product = response.products.find(
+      (item) => String(item.id) === productId,
+    );
+
+    if (product) return product;
+
+    const loadedCount = page * defaultProductsParams.rows;
+    if (loadedCount >= response.count || response.products.length === 0) {
+      return null;
+    }
+
+    page += 1;
+  }
+}
+
 export const defaultProductsParams = {
   rows: PRODUCTS_PAGE_SIZE,
   sortBy: 'id' as const,
