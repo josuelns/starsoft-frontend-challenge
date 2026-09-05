@@ -1,7 +1,11 @@
+'use client';
+
 import Image from 'next/image';
-import type { ComponentProps, ReactNode } from 'react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
+import { Spinner } from '@/components/ui/Spinner';
 import { descriptionStyles, nftTitleStyles, priceStyles } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
@@ -37,7 +41,7 @@ function CardRoot({ children, className }: CardRootProps) {
   return (
     <article
       className={cn(
-        'box-border flex h-[533px] w-[345px] shrink-0 flex-col overflow-hidden rounded bg-brand-card-bg pb-[10px] shadow-[0_1px_2px_0_rgba(0,0,0,0.1)]',
+        'box-border flex h-[533px] w-[345px] shrink-0 flex-col overflow-hidden rounded bg-brand-card-bg pb-[22px] shadow-[0_1px_2px_0_rgba(0,0,0,0.1)]',
         className,
       )}
     >
@@ -47,6 +51,14 @@ function CardRoot({ children, className }: CardRootProps) {
 }
 
 function CardImage({ src, alt, className }: CardImageProps) {
+  return (
+    <CardImageContent key={src} src={src} alt={alt} className={className} />
+  );
+}
+
+function CardImageContent({ src, alt, className }: CardImageProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <div
       className={cn(
@@ -58,12 +70,23 @@ function CardImage({ src, alt, className }: CardImageProps) {
         data-cart-fly-source
         className="relative h-[258px] w-[296px] overflow-hidden rounded-[4px] bg-brand-card-image-bg"
       >
+        {!isLoaded ? (
+          <Spinner
+            className="absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
+            aria-label={`Carregando imagem de ${alt}`}
+          />
+        ) : null}
         <Image
           src={src}
           alt={alt}
           fill
           sizes="296px"
-          className="object-contain"
+          className={cn(
+            'object-fill transition-opacity duration-300',
+            isLoaded ? 'opacity-100' : 'opacity-0',
+          )}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setIsLoaded(true)}
         />
       </div>
     </div>
@@ -105,7 +128,7 @@ function CardContent({ children, className }: CardContentProps) {
   return (
     <div
       className={cn(
-        'mt-[49px] flex h-[186px] flex-col px-[24.5px]',
+        'mt-[41px] flex h-[186px] flex-col px-[24.5px]',
         className,
       )}
     >

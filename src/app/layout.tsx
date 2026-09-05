@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
+import { QueryProvider } from '@/store/QueryProvider';
+import { ReduxProvider } from '@/store/ReduxProvider';
 import './globals.css';
 
 const poppins = Poppins({
@@ -46,7 +48,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${poppins.variable} h-full`}>
       <body className="flex min-h-dvh flex-col bg-brand-dark-bg">
-        {children}
+        <QueryProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </QueryProvider>
       </body>
     </html>
   );

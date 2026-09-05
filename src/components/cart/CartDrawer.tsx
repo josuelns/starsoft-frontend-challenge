@@ -1,7 +1,11 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import type { ComponentProps, ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
 import { cartTotalLabelStyles, cartTotalPriceStyles } from '@/components/ui/typography';
+import { drawerTransition } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 const drawerTitleId = 'cart-drawer-title';
@@ -26,16 +30,19 @@ type CartDrawerFinishButtonProps = ButtonProps;
 
 function CartDrawerRoot({ children, open = true, className }: CartDrawerRootProps) {
   return (
-    <aside
+    <motion.aside
       aria-labelledby={drawerTitleId}
+      initial={{ x: '100%' }}
+      animate={{ x: open ? 0 : '100%' }}
+      exit={{ x: '100%' }}
+      transition={drawerTransition}
       className={cn(
-        'fixed top-0 right-0 z-50 flex h-dvh w-full max-w-[679px] flex-col bg-brand-dark-bg shadow-[-29px_0_9.8px_0_rgba(0,0,0,0.1)] transition-transform duration-300 ease-(--ease-cart-drawer)',
-        open ? 'translate-x-0' : 'translate-x-full',
+        'fixed top-0 right-0 z-50 flex h-dvh w-full max-w-[679px] flex-col bg-brand-dark-bg shadow-[-29px_0_9.8px_0_rgba(0,0,0,0.1)]',
         className,
       )}
     >
       {children}
-    </aside>
+    </motion.aside>
   );
 }
 

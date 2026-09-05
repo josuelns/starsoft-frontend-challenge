@@ -2,13 +2,16 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CartLineItem, NftCatalogItem } from '@/app/_data/catalog-data';
 import {
-  calculateCartTotal,
-  getCartItemCount,
   getCatalogProgress,
   INITIAL_CATALOG_PAGE_SIZE,
 } from '@/app/_data/catalog-data';
+import { CatalogErrorState } from '@/components/catalog/CatalogErrorState';
+import { CatalogSkeleton } from '@/components/catalog/CatalogSkeleton';
+import {
+  CartFlyLayer,
+  type CartFlyPayload,
+} from '@/components/cart/CartFlyLayer';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { LoadMoreSection } from '@/components/layout/LoadMoreSection';
@@ -18,10 +21,20 @@ import {
   MARKETPLACE_PAGE_SHELL_CLASS,
 } from '@/components/layout/marketplace-layout';
 import { NftGrid } from '@/components/layout/NftGrid';
+import type { Nft } from '@/domain/nft/types';
 import {
-  CartFlyLayer,
-  type CartFlyPayload,
-} from '@/components/cart/CartFlyLayer';
+  formatCartTotal,
+  getCartItemCount,
+} from '@/domain/cart/cartLogic';
+import { useProductsCatalog } from '@/services/products/useProductsCatalog';
+import {
+  addProduct,
+  clearCart,
+  removeProduct,
+  setProductQuantity,
+  toggleCart,
+} from '@/store/cartSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 const ITEM_REVEAL_DELAY_MS = 120;
 
@@ -29,30 +42,51 @@ const CartSidebar = dynamic(() =>
   import('./CartSidebar').then((mod) => ({ default: mod.CartSidebar })),
 );
 
-type MarketplacePageProps = {
-  catalog: NftCatalogItem[];
-};
+export function MarketplacePage() {
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const isCartOpen = useAppSelector((state) => state.cart.isOpen);
+  const totalPrice = useAppSelector((state) => state.cart.totalPrice);
 
-export function MarketplacePage({ catalog }: MarketplacePageProps) {
-  const [cartLines, setCartLines] = useState<CartLineItem[]>([]);
-  const [addedIds, setAddedIds] = useState<Set<string>>(() => new Set());
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const {
+    catalog,
+    totalCount,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch,
+  } = useProductsCatalog();
+
   const [visibleCount, setVisibleCount] = useState(0);
   const [animateFromIndex, setAnimateFromIndex] = useState(0);
   const [isRevealing, setIsRevealing] = useState(true);
   const [hasInitialRevealCompleted, setHasInitialRevealCompleted] = useState(false);
   const [flyingItems, setFlyingItems] = useState<CartFlyPayload[]>([]);
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const revealAfterFetchRef = useRef(false);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
 
   const visibleItems = useMemo(
     () => catalog.slice(0, visibleCount),
     [catalog, visibleCount],
   );
-  const isCatalogComplete = visibleCount >= catalog.length;
-  const catalogProgress = getCatalogProgress(visibleCount, catalog.length);
-  const cartTotal = useMemo(() => calculateCartTotal(cartLines), [cartLines]);
-  const cartCount = useMemo(() => getCartItemCount(cartLines), [cartLines]);
+  const effectiveTotal = Math.max(totalCount, catalog.length);
+  const isCatalogComplete =
+    !hasNextPage && visibleCount >= effectiveTotal;
+  const catalogProgress = getCatalogProgress(
+    visibleCount,
+    totalCount,
+    catalog.length,
+    hasNextPage,
+  );
+  const addedIds = useMemo(
+    () => new Set(cartItems.map((line) => line.item.id)),
+    [cartItems],
+  );
+  const cartTotal = useMemo(() => formatCartTotal(totalPrice), [totalPrice]);
+  const cartCount = useMemo(() => getCartItemCount(cartItems), [cartItems]);
 
   const revealItems = (startIndex: number, targetCount: number) => {
     if (revealTimerRef.current) {
@@ -84,17 +118,41 @@ export function MarketplacePage({ catalog }: MarketplacePageProps) {
   };
 
   useEffect(() => {
-    const initialTarget = Math.min(INITIAL_CATALOG_PAGE_SIZE, catalog.length);
-    revealItems(0, initialTarget);
+    if (isLoading || catalog.length === 0 || visibleCount > 0) return;
 
+    const timer = window.setTimeout(() => {
+      revealItems(0, Math.min(INITIAL_CATALOG_PAGE_SIZE, catalog.length));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [catalog.length, isLoading, visibleCount]);
+
+  useEffect(() => {
+    if (!revealAfterFetchRef.current || catalog.length <= visibleCount) return;
+
+    revealAfterFetchRef.current = false;
+    const startIndex = visibleCount;
+    const targetCount = Math.min(
+      startIndex + INITIAL_CATALOG_PAGE_SIZE,
+      catalog.length,
+    );
+
+    const timer = window.setTimeout(() => {
+      revealItems(startIndex, targetCount);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [catalog.length, visibleCount]);
+
+  useEffect(() => {
     return () => {
       if (revealTimerRef.current) {
         clearTimeout(revealTimerRef.current);
       }
     };
-  }, [catalog.length]);
+  }, []);
 
-  const handleBuy = (item: NftCatalogItem, sourceEl: HTMLElement | null) => {
+  const handleBuy = (item: Nft, sourceEl: HTMLElement | null) => {
     if (addedIds.has(item.id)) return;
 
     const cartButton = cartButtonRef.current;
@@ -115,74 +173,74 @@ export function MarketplacePage({ catalog }: MarketplacePageProps) {
       ]);
     }
 
-    setAddedIds((current) => new Set(current).add(item.id));
-    setCartLines((current) => {
-      const existingLine = current.find((line) => line.item.id === item.id);
-
-      if (existingLine) {
-        return current.map((line) =>
-          line.item.id === item.id
-            ? { ...line, quantity: line.quantity + 1 }
-            : line,
-        );
-      }
-
-      return [...current, { item, quantity: 1 }];
-    });
+    dispatch(addProduct(item));
   };
 
   const handleFlyComplete = (id: string) => {
     setFlyingItems((current) => current.filter((flyItem) => flyItem.id !== id));
   };
 
-  const handleRemove = (id: string) => {
-    setCartLines((current) => current.filter((line) => line.item.id !== id));
-    setAddedIds((current) => {
-      const next = new Set(current);
-      next.delete(id);
-      return next;
-    });
-  };
-
-  const handleIncreaseQuantity = (id: string) => {
-    setCartLines((current) =>
-      current.map((line) =>
-        line.item.id === id
-          ? { ...line, quantity: line.quantity + 1 }
-          : line,
-      ),
-    );
-  };
-
-  const handleDecreaseQuantity = (id: string) => {
-    const targetLine = cartLines.find((line) => line.item.id === id);
+  const handleRemoveLine = (id: string) => {
+    const targetLine = cartItems.find((line) => line.item.id === id);
 
     if (!targetLine) return;
 
-    if (targetLine.quantity <= 1) {
-      handleRemove(id);
-      return;
+    for (let index = 0; index < targetLine.quantity; index += 1) {
+      dispatch(removeProduct(id));
     }
+  };
 
-    setCartLines((current) =>
-      current.map((line) =>
-        line.item.id === id
-          ? { ...line, quantity: line.quantity - 1 }
-          : line,
-      ),
-    );
+  const handleIncreaseQuantity = (id: string) => {
+    const targetLine = cartItems.find((line) => line.item.id === id);
+
+    if (!targetLine) return;
+
+    dispatch(addProduct(targetLine.item));
+  };
+
+  const handleDecreaseQuantity = (id: string) => {
+    dispatch(removeProduct(id));
+  };
+
+  const handleChangeQuantity = (id: string, quantity: number) => {
+    dispatch(setProductQuantity({ id, quantity }));
+  };
+
+  const handleOpenCart = () => {
+    if (!isCartOpen) {
+      dispatch(toggleCart());
+    }
+  };
+
+  const handleCloseCart = () => {
+    if (isCartOpen) {
+      dispatch(toggleCart());
+    }
+  };
+
+  const handleFinishPurchase = () => {
+    dispatch(clearCart());
   };
 
   const handleLoadMore = () => {
     if (isRevealing || isCatalogComplete) return;
 
     const startIndex = visibleCount;
-    const targetCount = Math.min(
-      startIndex + INITIAL_CATALOG_PAGE_SIZE,
-      catalog.length,
-    );
+    const loadedCount = catalog.length;
 
-    revealItems(startIndex, targetCount);
+    if (startIndex < loadedCount) {
+      const targetCount = Math.min(
+        startIndex + INITIAL_CATALOG_PAGE_SIZE,
+        loadedCount,
+      );
+      revealItems(startIndex, targetCount);
+      return;
+    }
+
+    if (hasNextPage && !isFetchingNextPage) {
+      revealAfterFetchRef.current = true;
+      fetchNextPage();
+    }
   };
 
   return (
@@ -193,29 +251,39 @@ export function MarketplacePage({ catalog }: MarketplacePageProps) {
         <Header
           ref={cartButtonRef}
           cartCount={cartCount}
-          onCartClick={() => setIsCartOpen(true)}
+          onCartClick={handleOpenCart}
         />
 
         <div className={`mx-auto flex w-full flex-1 flex-col ${MARKETPLACE_MAX_WIDTH_CLASS}`}>
           <main
             className={`flex-1 ${MARKETPLACE_HORIZONTAL_PADDING_CLASS} pt-[130px]`}
           >
-          <NftGrid
-            items={visibleItems}
-            addedIds={addedIds}
-            onBuy={handleBuy}
-            animateFromIndex={animateFromIndex}
-          />
-          {hasInitialRevealCompleted ? (
-            <LoadMoreSection
-              className="mt-[130px]"
-              progress={catalogProgress}
-              isComplete={isCatalogComplete}
-              isLoading={isRevealing}
-              onLoadMore={handleLoadMore}
-            />
-          ) : null}
-        </main>
+            {isLoading ? <CatalogSkeleton /> : null}
+
+            {isError ? (
+              <CatalogErrorState onRetry={() => refetch()} />
+            ) : null}
+
+            {!isLoading && !isError ? (
+              <>
+                <NftGrid
+                  items={visibleItems}
+                  addedIds={addedIds}
+                  onBuy={handleBuy}
+                  animateFromIndex={animateFromIndex}
+                />
+                {hasInitialRevealCompleted ? (
+                  <LoadMoreSection
+                    className="mt-[130px]"
+                    progress={catalogProgress}
+                    isComplete={isCatalogComplete}
+                    isLoading={isRevealing || isFetchingNextPage}
+                    onLoadMore={handleLoadMore}
+                  />
+                ) : null}
+              </>
+            ) : null}
+          </main>
 
           <Footer className="mt-[100px]" />
         </div>
@@ -223,12 +291,14 @@ export function MarketplacePage({ catalog }: MarketplacePageProps) {
 
       <CartSidebar
         isOpen={isCartOpen}
-        lines={cartLines}
+        lines={cartItems}
         total={cartTotal}
-        onClose={() => setIsCartOpen(false)}
-        onRemove={handleRemove}
+        onClose={handleCloseCart}
+        onFinish={handleFinishPurchase}
+        onRemove={handleRemoveLine}
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
+        onChangeQuantity={handleChangeQuantity}
       />
     </>
   );

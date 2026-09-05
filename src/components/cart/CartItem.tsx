@@ -1,7 +1,15 @@
+'use client';
+
 import Image from 'next/image';
-import type { ComponentProps, ReactNode } from 'react';
+import { motion } from 'framer-motion';
+import { useState, type MouseEvent, type ReactNode } from 'react';
 import { Card } from '@/components/nft/NftCard';
 import { titleStyles } from '@/components/ui/typography';
+import {
+  CART_TRASH_REMOVE_MS,
+  cartTrashRemoveTransition,
+  cartTrashTapTransition,
+} from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
 type CartItemLayout = 'full' | 'compact';
@@ -27,10 +35,14 @@ type CartItemQuantityProps = {
   value: number;
   onDecrease?: () => void;
   onIncrease?: () => void;
+  onChange?: (quantity: number) => void;
   className?: string;
 };
 
-type CartItemRemoveProps = ComponentProps<'button'>;
+type CartItemRemoveProps = {
+  className?: string;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+};
 
 function CartItemRoot({
   layout = 'full',
@@ -88,11 +100,24 @@ function CartItemQuantity({
   value,
   onDecrease,
   onIncrease,
+  onChange,
   className,
 }: CartItemQuantityProps) {
+  const [draft, setDraft] = useState(String(value));
+  const [isFocused, setIsFocused] = useState(false);
+
+  const commitDraft = () => {
+    const parsed = Number.parseInt(draft, 10);
+
+    if (!Number.isFinite(parsed) || draft.trim() === '') {
+      return;
+    }
+
+    onChange?.(parsed);
+  };
+
   return (
     <div
-      aria-label="Quantidade"
       className={cn(
         'flex h-[49px] w-[115px] shrink-0 items-center justify-between rounded bg-brand-dark-bg px-[8px] py-[12px]',
         className,
@@ -106,9 +131,30 @@ function CartItemQuantity({
       >
         −
       </button>
-      <span className="font-sans text-[16px] leading-4 text-brand-gray-light">
-        {value}
-      </span>
+      <input
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        aria-label="Quantidade"
+        value={isFocused ? draft : String(value)}
+        onChange={(event) => {
+          setDraft(event.target.value.replace(/\D/g, ''));
+        }}
+        onFocus={() => {
+          setIsFocused(true);
+          setDraft(String(value));
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+          commitDraft();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.currentTarget.blur();
+          }
+        }}
+        className="w-10 min-w-0 border-0 bg-transparent p-0 text-center font-sans text-[16px] leading-4 text-brand-gray-light outline-none"
+      />
       <button
         type="button"
         aria-label="Aumentar"
@@ -121,16 +167,40 @@ function CartItemQuantity({
   );
 }
 
-function CartItemRemove({ className, ...props }: CartItemRemoveProps) {
+function CartItemRemove({ className, onClick }: CartItemRemoveProps) {
+  const [isRemoving, setIsRemoving] = useState(false);
+
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isRemoving) return;
+
+    setIsRemoving(true);
+
+    window.setTimeout(() => {
+      onClick?.(event);
+      setIsRemoving(false);
+    }, CART_TRASH_REMOVE_MS);
+  };
+
   return (
-    <button
+    <motion.button
       type="button"
       aria-label="Remover item"
+      animate={
+        isRemoving
+          ? { y: 36, opacity: 0, scale: 0.72 }
+          : { y: 0, opacity: 1, scale: 1 }
+      }
+      whileHover={isRemoving ? undefined : { scale: 1.06 }}
+      whileTap={isRemoving ? undefined : { y: 6, scale: 0.9 }}
+      transition={
+        isRemoving ? cartTrashRemoveTransition : cartTrashTapTransition
+      }
       className={cn(
-        'flex h-[43px] w-[43px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand-orange transition-opacity hover:opacity-90',
+        'flex h-[43px] w-[43px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand-orange transition-opacity hover:opacity-90 disabled:cursor-not-allowed',
         className,
       )}
-      {...props}
+      disabled={isRemoving}
+      onClick={handleClick}
     >
       <Image
         src="/icons/delete.svg"
@@ -139,7 +209,7 @@ function CartItemRemove({ className, ...props }: CartItemRemoveProps) {
         width={26}
         height={26}
       />
-    </button>
+    </motion.button>
   );
 }
 
