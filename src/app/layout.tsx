@@ -45,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${poppins.variable} h-full`}>
-      <body className="flex min-h-full flex-col bg-brand-dark-bg">
+      <body className="flex min-h-dvh flex-col bg-brand-dark-bg">
         {children}
       </body>
     </html>

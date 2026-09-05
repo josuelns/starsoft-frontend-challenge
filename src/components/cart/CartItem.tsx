@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import type { ComponentProps, ReactNode } from 'react';
 import { Card } from '@/components/nft/NftCard';
-import { EthIcon } from '@/components/ui/EthIcon';
+import { titleStyles } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 type CartItemLayout = 'full' | 'compact';
@@ -24,7 +24,9 @@ type CartItemContentProps = {
 };
 
 type CartItemQuantityProps = {
-  value?: string;
+  value: number;
+  onDecrease?: () => void;
+  onIncrease?: () => void;
   className?: string;
 };
 
@@ -40,7 +42,7 @@ function CartItemRoot({
       data-layout={layout}
       className={cn(
         layout === 'full'
-          ? 'flex h-[200px] w-[619px] px-[30px] py-[19.5px]'
+          ? 'box-border flex h-[200px] w-full items-start gap-[20px] rounded bg-brand-cart-item-bg pt-[21px] pr-[30px] pb-[17px] pl-[26px]'
           : 'flex items-center gap-4 py-3',
         className,
       )}
@@ -54,46 +56,64 @@ function CartItemImage({ src, alt, className }: CartItemImageProps) {
   return (
     <div
       className={cn(
-        'relative h-[161px] w-[161px] shrink-0 overflow-hidden rounded',
+        'relative h-[161px] w-[161px] shrink-0 overflow-hidden rounded bg-brand-card-bg',
         className,
       )}
     >
-      <Image src={src} alt={alt} fill sizes="161px" className="object-cover" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="161px"
+        className="object-contain"
+      />
     </div>
   );
 }
 
 function CartItemContent({ children, className }: CartItemContentProps) {
   return (
-    <div className={cn('ml-[31px] flex min-w-0 flex-1 flex-col', className)}>
+    <div
+      className={cn(
+        'flex h-[161px] min-w-0 flex-1 flex-col',
+        className,
+      )}
+    >
       {children}
     </div>
   );
 }
 
-function CartItemQuantity({ value = '1', className }: CartItemQuantityProps) {
+function CartItemQuantity({
+  value,
+  onDecrease,
+  onIncrease,
+  className,
+}: CartItemQuantityProps) {
   return (
     <div
       aria-label="Quantidade"
       className={cn(
-        'mt-[16px] flex h-[49px] w-[115px] items-center justify-between rounded bg-brand-gray-dark px-2',
+        'flex h-[49px] w-[115px] shrink-0 items-center justify-between rounded bg-brand-dark-bg px-[8px] py-[12px]',
         className,
       )}
     >
       <button
         type="button"
         aria-label="Diminuir"
-        className="flex h-4 w-4 items-center justify-center text-brand-gray-light"
+        onClick={onDecrease}
+        className="flex h-6 w-6 cursor-pointer items-center justify-center text-[16px] leading-none text-brand-gray-light transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
       >
         −
       </button>
-      <span className="font-sans text-[20px] leading-5 text-brand-gray-light">
+      <span className="font-sans text-[16px] leading-4 text-brand-gray-light">
         {value}
       </span>
       <button
         type="button"
         aria-label="Aumentar"
-        className="flex h-4 w-4 items-center justify-center text-brand-gray-light"
+        onClick={onIncrease}
+        className="flex h-6 w-6 cursor-pointer items-center justify-center text-[16px] leading-none text-brand-gray-light transition-opacity hover:opacity-80"
       >
         +
       </button>
@@ -107,7 +127,7 @@ function CartItemRemove({ className, ...props }: CartItemRemoveProps) {
       type="button"
       aria-label="Remover item"
       className={cn(
-        'flex h-[43px] w-[43px] shrink-0 items-center justify-center rounded-full bg-brand-orange',
+        'flex h-[43px] w-[43px] shrink-0 cursor-pointer items-center justify-center rounded-full bg-brand-orange transition-opacity hover:opacity-90',
         className,
       )}
       {...props}
@@ -123,6 +143,16 @@ function CartItemRemove({ className, ...props }: CartItemRemoveProps) {
   );
 }
 
+function CartItemTitle({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <h2 className={cn(titleStyles, className)}>{children}</h2>;
+}
+
 function CartItemActions({
   children,
   className,
@@ -132,7 +162,10 @@ function CartItemActions({
 }) {
   return (
     <div
-      className={cn('mt-[16px] flex items-center justify-between', className)}
+      className={cn(
+        'mt-[15px] flex w-full items-center justify-between',
+        className,
+      )}
     >
       {children}
     </div>
@@ -142,7 +175,7 @@ function CartItemActions({
 export const CartItem = Object.assign(CartItemRoot, {
   Image: CartItemImage,
   Content: CartItemContent,
-  Title: Card.Title,
+  Title: CartItemTitle,
   Description: Card.Description,
   Price: Card.Price,
   Quantity: CartItemQuantity,

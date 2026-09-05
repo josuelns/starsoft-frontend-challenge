@@ -1,11 +1,6 @@
 import type { Metadata } from 'next';
-import {
-  showcaseCartItems,
-  showcaseCartTotal,
-  showcaseCompactCartItem,
-  showcaseFeaturedNft,
-} from './_data/showcase-data';
-import { HomeShowcase } from './_components/HomeShowcase';
+import { catalogItems } from './_data/catalog-data';
+import { MarketplacePage } from './_components/MarketplacePage';
 
 export const metadata: Metadata = {
   title: 'Explorar NFTs',
@@ -13,12 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return (
-    <HomeShowcase
-      featuredNft={showcaseFeaturedNft}
-      compactCartItem={showcaseCompactCartItem}
-      cartItems={showcaseCartItems}
-      cartTotal={showcaseCartTotal}
-    />
-  );
+  return <MarketplacePage catalog={catalogItems} />;
 }

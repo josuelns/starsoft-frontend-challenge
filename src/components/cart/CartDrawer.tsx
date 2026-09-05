@@ -1,13 +1,14 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { EthIcon } from '@/components/ui/EthIcon';
-import { priceStyles, titleStyles } from '@/components/ui/typography';
+import { cartTotalLabelStyles, cartTotalPriceStyles } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 const drawerTitleId = 'cart-drawer-title';
 
 type CartDrawerRootProps = {
   children: ReactNode;
+  open?: boolean;
   className?: string;
 };
 
@@ -23,12 +24,13 @@ type CartDrawerTotalProps = {
 
 type CartDrawerFinishButtonProps = ButtonProps;
 
-function CartDrawerRoot({ children, className }: CartDrawerRootProps) {
+function CartDrawerRoot({ children, open = true, className }: CartDrawerRootProps) {
   return (
     <aside
       aria-labelledby={drawerTitleId}
       className={cn(
-        'fixed top-0 right-0 z-50 flex h-full min-h-screen w-[679px] flex-col bg-brand-card-bg',
+        'fixed top-0 right-0 z-50 flex h-dvh w-full max-w-[679px] flex-col bg-brand-dark-bg shadow-[-29px_0_9.8px_0_rgba(0,0,0,0.1)] transition-transform duration-300 ease-(--ease-cart-drawer)',
+        open ? 'translate-x-0' : 'translate-x-full',
         className,
       )}
     >
@@ -47,7 +49,7 @@ function CartDrawerHeader({
   return (
     <header
       className={cn(
-        'relative flex items-center justify-center px-[30px] pt-8 pb-6',
+        'relative flex h-[100px] shrink-0 items-center justify-center px-[30px]',
         className,
       )}
     >
@@ -62,12 +64,34 @@ function CartDrawerBack({ className, ...props }: ComponentProps<'button'>) {
       type="button"
       aria-label="Voltar"
       className={cn(
-        'absolute left-[30px] flex h-[60px] w-[60px] items-center justify-center rounded-full bg-brand-gray-dark text-2xl text-brand-gray-light',
+        'absolute left-[30px] flex h-[60px] w-[60px] cursor-pointer items-center justify-center rounded-full bg-brand-gray-dark text-brand-gray-light transition-opacity hover:opacity-80',
         className,
       )}
       {...props}
     >
-      ←
+      <svg
+        aria-hidden="true"
+        width="18"
+        height="14"
+        viewBox="0 0 18 14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="shrink-0"
+      >
+        <path
+          d="M6.5 1L1 7L6.5 13"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M1 7H17"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
     </button>
   );
 }
@@ -77,7 +101,7 @@ function CartDrawerTitle({ children, className }: CartDrawerTitleProps) {
     <h2
       id={drawerTitleId}
       className={cn(
-        'font-sans text-[26px] leading-[26px] font-medium text-brand-gray-light',
+        'font-sans text-[24px] leading-[110%] font-medium tracking-normal text-brand-gray-light',
         className,
       )}
     >
@@ -94,7 +118,12 @@ function CartDrawerBody({
   className?: string;
 }) {
   return (
-    <div className={cn('flex-1 overflow-y-auto px-[30px]', className)}>
+    <div
+      className={cn(
+        'cart-drawer-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-[30px]',
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -108,7 +137,9 @@ function CartDrawerFooter({
   className?: string;
 }) {
   return (
-    <footer className={cn('px-[30px] pt-4 pb-8', className)}>{children}</footer>
+    <footer className={cn('mt-[10px] flex w-full max-w-[620px] flex-col pb-[16px]', className)}>
+      {children}
+    </footer>
   );
 }
 
@@ -116,18 +147,14 @@ function CartDrawerTotal({ value, className }: CartDrawerTotalProps) {
   return (
     <div
       className={cn(
-        'mb-6 flex items-center justify-between',
+        'mb-[40px] flex h-[34px] w-full max-w-[579px] items-center justify-between',
         className,
       )}
     >
-      <span className={cn(titleStyles, 'text-[26px] leading-[26px]')}>
-        TOTAL
-      </span>
+      <span className={cartTotalLabelStyles}>TOTAL</span>
       <div className="flex items-center gap-[10px]">
         <EthIcon size={34} />
-        <span className={cn(priceStyles, 'text-[26px] leading-[26px]')}>
-          {value} ETH
-        </span>
+        <span className={cartTotalPriceStyles}>{value} ETH</span>
       </div>
     </div>
   );
@@ -141,8 +168,7 @@ function CartDrawerFinishButton({
   return (
     <Button
       variant="finish"
-      fullWidth
-      className={cn('h-[81px] w-full', className)}
+      className={cn('w-full max-w-[620px]', className)}
       {...props}
     >
       {typeof children === 'string' ? (

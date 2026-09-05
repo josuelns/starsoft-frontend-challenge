@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { cn } from '@/lib/utils';
-import { buyButtonTextStyles, loadButtonTextStyles } from './typography';
+import { buyButtonTextStyles, finishButtonTextStyles, loadButtonTextStyles } from './typography';
 
 export type ButtonVariant = 'buy' | 'finish' | 'load';
 
@@ -34,9 +34,10 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variantStyles: Record<ButtonVariant, string> = {
-  buy: 'h-[66px] bg-brand-orange text-brand-gray-light',
-  finish: 'h-[81px] bg-brand-orange text-brand-gray-light',
-  load: 'h-auto w-full flex-col gap-[11px] bg-transparent p-0 hover:opacity-100',
+  buy: 'box-border h-[66px] cursor-pointer bg-brand-buy-bg px-[26px] py-[10px] text-brand-gray-light shadow-[0_50px_100px_-20px_rgba(50,50,93,0.25)] transition-colors duration-300 ease-out hover:opacity-90',
+  finish:
+    'box-border h-[81px] min-h-[81px] max-h-[81px] shrink-0 bg-brand-orange px-[26px] py-[10px] text-brand-gray-light shadow-[0_50px_100px_-20px_rgba(50,50,93,0.25)] transition-opacity hover:opacity-90',
+  load: 'group/load flex h-[107px] w-full cursor-pointer flex-col items-stretch gap-[11px] bg-transparent p-0 disabled:cursor-not-allowed',
 };
 
 function injectVariant(children: ReactNode, variant: ButtonVariant): ReactNode {
@@ -56,6 +57,7 @@ function injectVariant(children: ReactNode, variant: ButtonVariant): ReactNode {
 
 function ButtonLabel({ variant = 'buy', className, children }: ButtonLabelProps) {
   const isLoad = variant === 'load';
+  const isFinish = variant === 'finish';
 
   return (
     <span
@@ -63,9 +65,11 @@ function ButtonLabel({ variant = 'buy', className, children }: ButtonLabelProps)
         isLoad
           ? cn(
               loadButtonTextStyles,
-              'flex h-[86px] w-full items-center justify-center rounded bg-brand-gray-dark',
+              'flex h-[86px] w-full items-center justify-center rounded bg-brand-gray-dark transition-colors duration-300 ease-out group-hover/load:bg-brand-orange group-disabled/load:bg-brand-gray-dark',
             )
-          : buyButtonTextStyles,
+          : isFinish
+            ? finishButtonTextStyles
+            : buyButtonTextStyles,
         className,
       )}
     >
@@ -95,7 +99,7 @@ function ButtonProgress({ value = 47, className }: ButtonProgressProps) {
       )}
     >
       <div
-        className="h-full rounded-full bg-brand-orange"
+        className="h-full rounded-full bg-brand-orange transition-[width] duration-500 ease-out"
         style={{ width: `${value}%` }}
       />
     </div>
@@ -116,7 +120,9 @@ function ButtonRoot({
     <button
       type={type}
       className={cn(
-        'inline-flex items-center justify-center rounded font-sans transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60',
+        isLoad ? 'flex' : 'inline-flex',
+        'items-center justify-center rounded font-sans disabled:cursor-not-allowed disabled:opacity-60',
+        variant !== 'buy' && !isLoad && 'transition-opacity hover:opacity-90',
         variantStyles[variant],
         fullWidth && !isLoad && 'w-full',
         className,
